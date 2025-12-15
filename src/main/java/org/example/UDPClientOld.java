@@ -1,18 +1,13 @@
 package org.example;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class UDPClient implements Runnable {
-
-    private DatagramSocket socket;
-    private InetAddress serverAddress;
-    private int serverPort = 5000;
-    private boolean running;
-    private String username;
+public class UDPClientOld implements Runnable {
 
     public static void main(String[] args) throws Exception {
         UDPClient client = new UDPClient("Alice");
@@ -20,10 +15,7 @@ public class UDPClient implements Runnable {
     }
 
     public UDPClient(String username) throws Exception {
-        this.username = username;
-        this.socket = new DatagramSocket();
-        this.serverAddress = InetAddress.getByName("127.0.0.1");
-        this.running = true;
+        DatagramSocket socket = new DatagramSocket();
     }
 
     @Override
@@ -48,14 +40,13 @@ public class UDPClient implements Runnable {
             }
 
             socket.close();
-            receiveThread.join();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void send(String message) throws Exception {
+    private void send(String message) throws IOException {
         byte[] data = message.getBytes();
         DatagramPacket packet = new DatagramPacket(
                 data, data.length, serverAddress, serverPort
@@ -68,10 +59,13 @@ public class UDPClient implements Runnable {
 
         while (running) {
             try {
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+                DatagramPacket packet =
+                        new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
-                String message = new String(packet.getData(), 0, packet.getLength());
+                String message = new String(
+                        packet.getData(), 0, packet.getLength()
+                );
                 System.out.println(message);
 
             } catch (Exception e) {
@@ -79,4 +73,5 @@ public class UDPClient implements Runnable {
             }
         }
     }
+
 }
