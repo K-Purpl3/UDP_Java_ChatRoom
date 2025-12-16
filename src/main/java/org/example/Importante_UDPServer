@@ -1,0 +1,51 @@
+SERVIDOR UDP — IMPRESCINDIBLE
+Imports mínimos
+import java.net.DatagramSocket;
+import java.net.DatagramPacket;
+import java.net.InetAddress;
+import java.util.List;
+import java.util.ArrayList;
+
+Crear socket servidor
+DatagramSocket socket = new DatagramSocket(5000);
+
+Recibir paquete
+byte[] buffer = new byte[1024];
+DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+socket.receive(packet);
+
+Leer mensaje + datos del cliente
+String message = new String(
+        packet.getData(), 0, packet.getLength()
+);
+
+InetAddress address = packet.getAddress();
+int port = packet.getPort();
+
+
+👉 Esto es CLAVE en UDP
+(IP + puerto = “identidad” del cliente)
+
+Guardar clientes (UDP con estado)
+static class ClientInfo {
+    InetAddress address;
+    int port;
+    String username;
+}
+
+List<ClientInfo> clients = new ArrayList<>();
+
+Enviar mensaje a un cliente
+DatagramPacket out = new DatagramPacket(
+        data, data.length,
+        client.address, client.port
+);
+socket.send(out);
+
+Broadcast (chat)
+for (ClientInfo client : clients) {
+    socket.send(new DatagramPacket(
+            data, data.length,
+            client.address, client.port
+    ));
+}

@@ -1,0 +1,92 @@
+CLIENTE UDP — IMPRESCINDIBLE
+Crear socket cliente
+DatagramSocket socket = new DatagramSocket();
+
+Dirección del servidor
+InetAddress serverAddress = InetAddress.getByName("127.0.0.1");
+int serverPort = 5000;
+
+Enviar mensaje
+byte[] data = message.getBytes();
+DatagramPacket packet = new DatagramPacket(
+        data, data.length,
+        serverAddress, serverPort
+);
+socket.send(packet);
+
+Recibir mensajes (normalmente en hilo)
+byte[] buffer = new byte[1024];
+DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+socket.receive(packet);
+
+String msg = new String(
+        packet.getData(), 0, packet.getLength()
+);
+
+🧠 2. CHULETA UDP (CHAT / MULTICLIENTE)
+
+Guárdate esto como si fuera una diapositiva 👇
+
+🔹 UDP NO mantiene conexión
+
+No hay accept()
+
+No hay sesión
+
+El servidor no sabe quién eres
+
+👉 Si quieres usuarios → guardar IP + puerto
+
+🔹 Identidad de un cliente UDP
+InetAddress + port
+
+
+Eso sustituye al Socket de TCP
+
+🔹 Protocolo (inventado por ti)
+
+Ejemplo típico:
+
+JOIN username
+MSG texto
+QUIT
+
+
+UDP no impone protocolo, tú lo defines
+
+🔹 Servidor UDP con usuarios
+
+receive(packet)
+
+Leer mensaje
+
+Guardar cliente si no existe
+
+Responder usando packet.getAddress() y getPort()
+
+🔹 Broadcast en UDP
+
+No existe de forma automática
+
+Se simula enviando a todos los clientes guardados
+
+🔹 Cliente UDP con chat
+
+Un hilo para enviar
+
+Un hilo para recibir
+
+Socket compartido
+
+🔹 ¿Por qué usar hilos en el cliente?
+
+Para:
+
+Escribir mensajes
+
+Recibir mensajes
+al mismo tiempo
+
+🔹 UDP vs TCP (respuesta de profe)
+
+UDP es más rápido y no orientado a conexión, por lo que hay que gestionar manualmente el estado de los clientes.
