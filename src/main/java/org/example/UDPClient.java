@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.sql.SQLOutput;
+import java.util.Scanner;
 
 
 /*
@@ -24,7 +26,10 @@ public class UDPClient implements Runnable {
 
 
     public static void main(String[] args) throws Exception {
-        UDPClient client = new UDPClient("Alice");
+        System.out.println("Starting UDP Server");
+        System.out.println("Enter your name");
+        String name = new Scanner(System.in).next();
+        UDPClient client = new UDPClient(name);
         client.run();
     }
 

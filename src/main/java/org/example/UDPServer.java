@@ -65,7 +65,7 @@ public class UDPServer {
     }
 
 
-    private void handlePacket(DatagramPacket packet) {
+    /*private void handlePacket(DatagramPacket packet) {
         String message = new String(
                 packet.getData(), 0, packet.getLength()
         );
@@ -75,10 +75,10 @@ public class UDPServer {
         int port = packet.getPort(); // Puerto del cliente
 
 
-        /*
+
          * Protocolo del servidor:
          * JOIN username -> registrar cliente
-         */
+
         if (message.startsWith("JOIN ")) {
             String username = message.substring(5);
 
@@ -94,6 +94,52 @@ public class UDPServer {
 
 
                 System.out.println(username + " joined from " + address + ":" + port);
+            }
+        }
+    }*/
+
+
+    private void handlePacket(DatagramPacket packet) {
+        String message = new String(
+                packet.getData(), 0, packet.getLength()
+        );
+
+        InetAddress address = packet.getAddress();
+        int port = packet.getPort();
+
+        // JOIN username
+        if (message.startsWith("JOIN ")) {
+            String username = message.substring(5);
+
+            ClientInfo existing = findClient(address, port);
+            if (existing == null) {
+                ClientInfo client = new ClientInfo();
+                client.address = address;
+                client.port = port;
+                client.username = username;
+                clients.add(client);
+
+                System.out.println(username + " joined from " + address + ":" + port);
+            }
+            return;
+        }
+
+        // MSG texto
+        if (message.startsWith("MSG ")) {
+            ClientInfo sender = findClient(address, port);
+            if (sender == null) return;
+
+            String text = message.substring(4);
+            String formatted = sender.username + ": " + text;
+
+            // Mostrar en consola del servidor
+            System.out.println(formatted);
+
+            try {
+                // Enviar a todos los clientes (incluido el que lo envió)
+                broadcast(formatted);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
